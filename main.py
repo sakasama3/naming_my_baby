@@ -7,15 +7,25 @@ import re
 import requests
 from urllib import parse
 from bs4 import BeautifulSoup
-from typing import Any
-from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import TypedDict
+
+
+class ResultDict(TypedDict):
+    ジャンル: str
+    ページ: int
+    名前: str
+    読み: str
+    総格: str
+    天格: str
+    人格: str
+    地格: str
 
 
 def fetch_names(
     myoji: str, sex: int, genre: int = 1, page: int = 1
-) -> Tuple[List[Dict[str, Any]], bool]:
+) -> Tuple[List[ResultDict], bool]:
     """赤ちゃん名づけサイトから名前一覧と総格・三格を取得する
 
     Args:
@@ -23,8 +33,8 @@ def fetch_names(
         page (int): ページ
 
     Returns:
-        List[Dict[str, Any]]: 取得した情報の辞書のリスト
-        bool: 次ページ有無
+        List[ResultDict]: 取得した情報の辞書のリスト
+        bool: 次ページボタンがあれば True、なければ False
     """
     logger = logging.getLogger(__name__)
     url_encoded_myoji = parse.quote(myoji)
@@ -76,7 +86,7 @@ def fetch_names(
                 }
             )
 
-    # 次ページ有無
+    # 次ページボタンの有無を確認する
     page_links = soup.select("p a")
     for page_link in page_links:
         if page_link.get_text() == "次ページ":
@@ -99,7 +109,7 @@ def main(myoji: str, sex: str, filename: str):
     logger = logging.getLogger(__name__)
 
     ############################################################
-    # 赤ちゃん名づけサイトの最初のページを取得する
+    # 赤ちゃん名づけサイトから情報を取得し、result_list を作成する
     ############################################################
     result_list = list()
     for genre in const.GENRE_DICT.keys():
