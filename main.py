@@ -89,6 +89,13 @@ def fetch_names(
 
 
 def main(myoji: str, sex: str, filename: str):
+    """メイン関数
+
+    Args:
+        myoji (str): 苗字
+        sex (str): 性別
+        filename (str): 出力する CSV のファイル名
+    """
     logger = logging.getLogger(__name__)
 
     ############################################################
